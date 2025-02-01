@@ -28,6 +28,8 @@ try:
 except ImportError:
     wandb = None
 
+# tensorboard是tensorflow的可视化工具
+# tensorboardX是pytorch的可视化工具
 try:
     import tensorboardX as tensorboard
 except ImportError:
@@ -58,20 +60,18 @@ CHECKPOINT_DICT = {"ViT-L-14": "models--laion--CLIP-ViT-L-14-DataComp.XL-s13B-b9
 
 
 
-
-
 # 设置随机数
 def random_seed(seed=42, rank=0):
     torch.manual_seed(seed + rank)
     np.random.seed(seed + rank)
     random.seed(seed + rank)
 
-
+# 为解决排序问题的工具，网址有更新
 def natural_key(string_):
     """See http://www.codinghorror.com/blog/archives/001018.html"""
     return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_.lower())]
 
-
+# 读取存档
 def get_latest_checkpoint(path: str, remote: bool):
     # as writen, this glob recurses, so can pick up checkpoints across multiple sub-folders
     if remote:
@@ -111,10 +111,12 @@ def main(args):
     if args.name is None:
         # sanitize model name for filesystem / uri use, easier if we don't use / in name as a rule?
         model_name_safe = args.model.replace('/', '-')
-        date_str = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
+        date_str = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")      # strftime将时间转化为字符串.
         if args.distributed:
             # sync date_str from master to all ranks
-            date_str = broadcast_object(args, date_str)
+            date_str = broadcast_object(args, date_str)              # broadcast_object() 分布式训练, 在 training.distributed文件中.
+        
+        # '-'.join,将数组中每个元素用’-‘隔开，合成一个字符串。
         args.name = '-'.join([
             date_str,
             f"pt_{args.clip_type}",
@@ -132,9 +134,11 @@ def main(args):
             f"frm_{args.num_frames}",
             f"vdb_{args.video_decode_backend}",
         ])
-    args.pretrained = CHECKPOINT_DICT[args.model]
+    # 选取模型和保存的参数
+    args.pretrained = CHECKPOINT_DICT[args.model]  
     args.model = MODEL_DICT[args.model]
 
+    
     resume_latest = args.resume == 'latest'
     log_base_path = os.path.join(args.logs, args.name)
     args.log_base_path = log_base_path
