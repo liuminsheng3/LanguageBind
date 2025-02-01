@@ -93,9 +93,6 @@ def SET_GLOBAL_VALUE(k, v):
 def main(args):
     args = parse_args(args)
 
-    # SET_GLOBAL_VALUE('PATCH_DROPOUT', args.force_patch_dropout)
-    # SET_GLOBAL_VALUE('NUM_FRAMES', args.num_frames)
-
     if torch.cuda.is_available():
         # This enables tf32 on Ampere GPUs which is only 8% slower than
         # float16 and almost as accurate as float32
