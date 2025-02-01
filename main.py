@@ -49,6 +49,7 @@ from training.file_utils import pt_load, start_sync_process, remote_sync
 from train import train_one_epoch
 from model.build_model import create_vat_model
 
+# 搞清楚模型有什么区别？
 LATEST_CHECKPOINT_NAME = "epoch_latest.pt"
 MODEL_DICT = {"ViT-L-14": "laion/CLIP-ViT-L-14-DataComp.XL-s13B-b90K",
               "ViT-H-14": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K"}
@@ -59,7 +60,7 @@ CHECKPOINT_DICT = {"ViT-L-14": "models--laion--CLIP-ViT-L-14-DataComp.XL-s13B-b9
 
 
 
-#
+# 设置随机数
 def random_seed(seed=42, rank=0):
     torch.manual_seed(seed + rank)
     np.random.seed(seed + rank)
